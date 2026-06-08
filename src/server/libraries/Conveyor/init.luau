@@ -1,9 +1,10 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local ServerScriptService = game:GetService("ServerScriptService")
 
 local Configuration = require(ReplicatedStorage.Shared.Configuration)
-local PropertyGenerator = require(ReplicatedStorage.Libraries.PropertyGenerator)
+local PropertyGenerator = require(ServerScriptService.Libraries.PropertyGenerator)
 local Types = require(ReplicatedStorage.Shared.Types)
 local Baggage = require(script.Baggage)
 
