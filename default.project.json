@@ -3,24 +3,40 @@
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {
+      "$ignoreUnknownInstances": true,
       "Shared": {
         "$path": "src/shared"
+      },
+      "Libraries": {
+        "$path": "src/client/libraries"
+      },
+      "Assets": {
+        "$path": "assets/client/Assets.rbxm"
       }
     },
     "ServerScriptService": {
       "Server": {
-        "$path": "src/server"
+        "$path": "src/server/main.server.luau"
+      },
+      "Libraries": {
+        "$path": "src/server/libraries"
+      }
+    },
+    "ServerStorage": {
+      "Assets": {
+        "$path": "assets/server/Assets.rbxm"
       }
     },
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "Client": {
-          "$path": "src/client"
+          "$path": "src/client/main.client.luau"
         }
       }
     },
     "Workspace": {
-      "$path": "map/Workspace.rbxm"
+      "$path": "map/Workspace.rbxm",
+      "$ignoreUnknownInstances": true
     },
     "Lighting": {
       "$path": "map/Lighting.rbxm"
