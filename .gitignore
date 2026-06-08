@@ -1,8 +1,11 @@
 # Project place file
 /take-home-assignment.rbxlx
+/take-home-assignment.rbxl
 
 # Roblox Studio lock files
 /*.rbxlx.lock
 /*.rbxl.lock
+/*.lock
 
 sourcemap.json
+.luaurc
