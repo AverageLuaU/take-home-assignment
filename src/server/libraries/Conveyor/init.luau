@@ -2,10 +2,10 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local Configuration = require(ReplicatedStorage.Shared.Configuration)
+local PropertyGenerator = require(ReplicatedStorage.Libraries.PropertyGenerator)
 local Types = require(ReplicatedStorage.Shared.Types)
 local Baggage = require(script.Baggage)
-
-local BaggageTemplate: BasePart = ReplicatedStorage.Assets.Baggage
 
 local Conveyor = {}
 Conveyor.__index = Conveyor
@@ -14,6 +14,7 @@ export type Class = typeof(setmetatable(
 	{} :: {
 		ConveyorInstance: Types.ConveyorInstance,
 		SpawnInterval: number,
+		Baggages: { [number]: Baggage.Class },
 		_SpawnConnection: RBXScriptConnection?,
 	},
 	Conveyor
@@ -35,10 +36,29 @@ function Conveyor.new(ConveyorInstance: Types.ConveyorInstance): Class
 	return self
 end
 
-function Conveyor.RemoveBaggage(self: Class, BaggageId: number) end
+function Conveyor.GetBaggage(self: Class, BaggageId: number): Baggage.Class?
+	return self.Baggages[BaggageId]
+end
+
+function Conveyor.RemoveBaggage(self: Class, BaggageId: number)
+	local ExistingBaggage = self:GetBaggage(BaggageId)
+	assert(ExistingBaggage ~= nil, "Conveyor.RemoveBaggage: Attempted to remove non-existant baggage id: " .. BaggageId)
+
+	self.Baggages[BaggageId] = nil
+	ExistingBaggage:Destroy()
+end
 
 function Conveyor.AddBaggage(self: Class)
-	-- local NewBaggage = Baggage.new(self.ConveyorInstance)
+	local NewBaggageMaterial = PropertyGenerator.GenerateBaggageMaterial()
+	local NewBaggageColor = PropertyGenerator.GenerateBaggageColor()
+
+	local NewBaggage =
+		Baggage.new(self.ConveyorInstance, Configuration.DEFAULT_BAGGAGE_LIFETIME, NewBaggageMaterial, NewBaggageColor)
+	self.Baggages[NewBaggage.Id] = NewBaggage
+
+	NewBaggage.Expired:Once(function()
+		self:RemoveBaggage(NewBaggage.Id) -- Destroy and deindex
+	end)
 end
 
 function Conveyor.SetSpawnInterval(self: Class, NewSpawnInterval: number)
