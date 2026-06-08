@@ -16,13 +16,18 @@ export type Class = typeof(setmetatable(
 	Baggage
 ))
 
-function Baggage.new(ConveyorInstance: Types.ConveyorInstance)
+function Baggage.new(ConveyorInstance: Types.ConveyorInstance, Lifetime: number)
 	local self = setmetatable({}, Baggage) :: Class
 
-	self.Id = BaggageId
+	self.Id = BaggageId -- UID
 	BaggageId += 1
 
-	self.BaggageInstance = Instance.new("Folder")
+	local BaggageInstance = Instance.new("Folder")
+    BaggageInstance:SetAttribute("Id", self.Id)
+    
+
+    BaggageInstance.Parent = ConveyorInstance
+    self.BaggageInstance = BaggageInstance
 
 	return self
 end
