@@ -1,4 +1,6 @@
 return {
-    CONVEYOR_TAG = "Conveyor",
-    SPAWN_INTERVAL_SELECTOR_GUI_TAG = "SpawnIntervalSelectorGui"
+	CONVEYOR_TAG = "Conveyor",
+	SPAWN_INTERVAL_SELECTOR_GUI_TAG = "SpawnIntervalSelectorGui",
+	DEFAULT_SPAWN_INTERVAL = 1,
+    DEFAULT_BAGGAGE_LIFETIME = 7,
 }
