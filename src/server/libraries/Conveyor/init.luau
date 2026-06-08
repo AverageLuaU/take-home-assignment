@@ -94,6 +94,10 @@ end
 
 function Conveyor.Destroy(self: Class)
 	self:StopSpawning()
+	for _, ExistingBaggage in self.Baggages do
+		ExistingBaggage:Destroy()
+	end
+	self.Baggages = nil :: any
 end
 
 return Conveyor

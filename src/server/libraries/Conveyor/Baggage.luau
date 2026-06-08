@@ -40,6 +40,7 @@ function Baggage.new(ConveyorInstance: Types.ConveyorInstance, Lifetime: number,
 	self.BaggageInstance:SetAttribute("Id", self.Id)
 	self.BaggageInstance:SetAttribute("Material", Material.Value) -- Attributes don't store materials natively, can reconstruct on client
 	self.BaggageInstance:SetAttribute("Color", Color)
+	self.BaggageInstance:SetAttribute("CreationTime", workspace:GetServerTimeNow()) -- For client sync
 
 	self.CreationTime = os.clock()
 	self:SetLifetime(Lifetime)
