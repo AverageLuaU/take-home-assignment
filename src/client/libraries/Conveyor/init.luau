@@ -63,6 +63,7 @@ function Conveyor.AddBaggage(self: Class, BaggageInstance: Folder)
 
 	local NewBaggage = Baggage.new(BaggageInstance, self.ConveyorInstance, StartAttachment, EndAttachment)
 	self.Baggages[NewBaggage.Id] = NewBaggage
+	NewBaggage:Start()
 
 	NewBaggage.Expired:Once(function()
 		self:RemoveBaggage(NewBaggage.Id)

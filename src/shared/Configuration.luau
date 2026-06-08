@@ -8,4 +8,7 @@ return {
 	POSSIBLE_BAGGAGE_COLOR_HUE_RANGE = { 0, 1 },
 	POSSIBLE_BAGGAGE_COLOR_SATURATION_RANGE = { 0, 1 },
 	POSSIBLE_BAGGAGE_COLOR_VALUE_RANGE = { 0, 1 },
+
+	BAGGAGE_SPAWN_ANIMATION_TWEENINFO = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+	BAGGAGE_DESTROY_ANIMATION_TWEENINFO = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
 }
