@@ -12,6 +12,9 @@
       },
       "Assets": {
         "$path": "assets/client/Assets.rbxm"
+      },
+      "Packages": {
+        "$path": "Packages"
       }
     },
     "ServerScriptService": {
