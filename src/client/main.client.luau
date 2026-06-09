@@ -23,6 +23,13 @@ local function InitializeSpawnIntervalSelector(SpawnIntervalSelectionGui: Types.
 	SpawnIntervalSelectionGui.Maximum.Text = Configuration.SPAWN_INTERVAL_MAXIMUM
 	SpawnIntervalSelectionGui.Current.Text = "Current: " .. CurrentDesiredValue
 
+	DragDetector.DragUDim2 = UDim2.fromScale(
+		-0.5
+			+ (Configuration.DEFAULT_SPAWN_INTERVAL - Configuration.SPAWN_INTERVAL_MINIMUM)
+				/ (Configuration.SPAWN_INTERVAL_MAXIMUM - Configuration.SPAWN_INTERVAL_MINIMUM),
+		0
+	)
+
 	local function UpdateDrag()
 		local Scale = math.clamp(DragDetector.DragUDim2.X.Scale, -0.5, 0.5)
 		local NewScale = math.map(Scale, -0.5, 0.5, 0, 1)
@@ -32,6 +39,7 @@ local function InitializeSpawnIntervalSelector(SpawnIntervalSelectionGui: Types.
 		SpawnIntervalSelectionGui.Current.Text = ("Current: %.2f"):format(CurrentDesiredValue)
 	end
 
+	UpdateDrag()
 	local function StartDrag()
 		UpdateDesiredValueTask = task.spawn(function() -- Limit remote frequency to save bandwidth
 			while true do
