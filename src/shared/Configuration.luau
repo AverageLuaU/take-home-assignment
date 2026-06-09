@@ -11,4 +11,6 @@ return {
 
 	BAGGAGE_SPAWN_ANIMATION_TWEENINFO = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
 	BAGGAGE_DESTROY_ANIMATION_TWEENINFO = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+
+	DEFAULT_BAGGAGE_ACTIVATION_DISTANCE = 20,
 }
