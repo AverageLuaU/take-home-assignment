@@ -1,0 +1,10 @@
+{
+    "Name": "Events",
+    "ClassName": "Folder",
+    "Children": [
+        {
+            "Name": "ActivateBaggage",
+            "ClassName": "RemoteEvent"
+        }
+    ]
+}
