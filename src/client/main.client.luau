@@ -7,9 +7,51 @@ local Types = require(ReplicatedStorage.Shared.Types)
 local Conveyor = require(ReplicatedStorage.Libraries.Conveyor)
 
 local ActivateBaggageEvent = ReplicatedStorage.Shared.Events.ActivateBaggage
+local SetSpawnIntervalEvent = ReplicatedStorage.Shared.Events.SetSpawnInterval
 
-local function InitializeSpawnIntervalSelector(SpawnIntervalSelectionGui: ScreenGui)
-	
+local function InitializeSpawnIntervalSelector(SpawnIntervalSelectionGui: Types.SpawnIntervalSelectorGui)
+	-- Quick client-side implementation
+	local Frame = SpawnIntervalSelectionGui.Frame
+	local Bar = Frame.Bar
+	local Hold = Frame.Hold
+	local DragDetector = Hold.UIDragDetector
+
+	local CurrentDesiredValue: number = Configuration.DEFAULT_SPAWN_INTERVAL
+	local UpdateDesiredValueTask: thread?
+
+	SpawnIntervalSelectionGui.Minimum.Text = Configuration.SPAWN_INTERVAL_MINIMUM
+	SpawnIntervalSelectionGui.Maximum.Text = Configuration.SPAWN_INTERVAL_MAXIMUM
+	SpawnIntervalSelectionGui.Current.Text = "Current: " .. CurrentDesiredValue
+
+	local function UpdateDrag()
+		local Scale = math.clamp(DragDetector.DragUDim2.X.Scale, -0.5, 0.5)
+		local NewScale = math.map(Scale, -0.5, 0.5, 0, 1)
+		Bar.Size = UDim2.fromScale(NewScale, 1)
+		CurrentDesiredValue = (Configuration.SPAWN_INTERVAL_MAXIMUM - Configuration.SPAWN_INTERVAL_MINIMUM) * NewScale
+			+ Configuration.SPAWN_INTERVAL_MINIMUM
+		SpawnIntervalSelectionGui.Current.Text = ("Current: %.2f"):format(CurrentDesiredValue)
+	end
+
+	local function StartDrag()
+		UpdateDesiredValueTask = task.spawn(function() -- Limit remote frequency to save bandwidth
+			while true do
+				task.wait(Configuration.SPAWN_INTERVAL_UPDATE_FREQUENCY)
+				SetSpawnIntervalEvent:FireServer(CurrentDesiredValue)
+			end
+		end)
+	end
+
+	local function StopDrag()
+		if UpdateDesiredValueTask and coroutine.status(UpdateDesiredValueTask) == "suspended" then
+			task.cancel(UpdateDesiredValueTask)
+			UpdateDesiredValueTask = nil
+		end
+		SetSpawnIntervalEvent:FireServer(CurrentDesiredValue)
+	end
+
+	DragDetector.DragStart:Connect(StartDrag)
+	DragDetector.DragContinue:Connect(UpdateDrag)
+	DragDetector.DragEnd:Connect(StopDrag)
 end
 
 local function ConveryorAdded(ConveyorInstance: Types.ConveyorInstance)
