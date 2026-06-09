@@ -25,6 +25,10 @@ local InstantiatedConveyors = {} :: {
 	[Types.ConveyorInstance]: Class,
 }
 
+function Conveyor.getAllConveyors()
+	return InstantiatedConveyors
+end
+
 function Conveyor.getConveyor(ConveyorInstance: Types.ConveyorInstance): Class?
 	return InstantiatedConveyors[ConveyorInstance]
 end

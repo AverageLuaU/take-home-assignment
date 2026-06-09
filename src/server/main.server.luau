@@ -9,6 +9,7 @@ local Types = require(ReplicatedStorage.Shared.Types)
 local Conveyor = require(ServerScriptService.Libraries.Conveyor)
 
 local ActivateBaggageEvent = ReplicatedStorage.Shared.Events.ActivateBaggage
+local SetSpawnIntervalEvent = ReplicatedStorage.Shared.Events.SetSpawnInterval
 
 local CurrentSpawnInterval = Configuration.DEFAULT_SPAWN_INTERVAL
 local SpawnIntervalSelectionGui = ServerStorage.Assets.SpawnIntervalSelector
@@ -55,6 +56,19 @@ local function BaggageActivated(Player: Player, ConveyorInstance: Types.Conveyor
 	print("Player " .. Player.Name .. " clicked baggage Id: " .. BaggageId)
 end
 
+local function SetSpawnInterval(Player: Player, DesiredSpawnInterval: number)
+	if Player ~= SpawnIntervalSelectionPlayer then
+		return
+	end
+
+	DesiredSpawnInterval =
+		math.clamp(DesiredSpawnInterval, Configuration.SPAWN_INTERVAL_MINIMUM, Configuration.SPAWN_INTERVAL_MAXIMUM)
+
+	for _, ExistingConveyor in Conveyor.getAllConveyors() do
+		ExistingConveyor:SetSpawnInterval(DesiredSpawnInterval)
+	end
+end
+
 local function PlayerAdded(Player: Player)
 	if SpawnIntervalSelectionPlayer == nil then
 		GrantSpawnIntervalSelectionGui(Player)
@@ -90,3 +104,4 @@ CollectionService:GetInstanceAddedSignal(Configuration.CONVEYOR_TAG):Connect(Con
 CollectionService:GetInstanceRemovedSignal(Configuration.CONVEYOR_TAG):Connect(ConveyorRemoving)
 
 ActivateBaggageEvent.OnServerEvent:Connect(BaggageActivated)
+SetSpawnIntervalEvent.OnServerEvent:Connect(SetSpawnInterval)
