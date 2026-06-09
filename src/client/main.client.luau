@@ -6,14 +6,23 @@ local Configuration = require(ReplicatedStorage.Shared.Configuration)
 local Types = require(ReplicatedStorage.Shared.Types)
 local Conveyor = require(ReplicatedStorage.Libraries.Conveyor)
 
-local function InitializeSpawnIntervalSelector(SpawnIntervalSelectionGui: ScreenGui) end
+local ActivateBaggageEvent = ReplicatedStorage.Shared.Events.ActivateBaggage
+
+local function InitializeSpawnIntervalSelector(SpawnIntervalSelectionGui: ScreenGui)
+	
+end
 
 local function ConveryorAdded(ConveyorInstance: Types.ConveyorInstance)
 	local NewConveyor = Conveyor.new(ConveyorInstance)
+
+	NewConveyor.BaggageActivated:Connect(function(BaggageId: number)
+		print("Baggage Id: " .. BaggageId)
+		ActivateBaggageEvent:FireServer(ConveyorInstance, BaggageId)
+	end)
 end
 
 local function ConveyorRemoving(ConveyorInstance: Types.ConveyorInstance)
-	local ExistingConveyor = Conveyor.new(ConveyorInstance)
+	local ExistingConveyor = Conveyor.getConveyor(ConveyorInstance)
 	if ExistingConveyor then
 		ExistingConveyor:Destroy()
 	end

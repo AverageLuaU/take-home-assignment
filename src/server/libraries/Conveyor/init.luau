@@ -31,7 +31,9 @@ end
 
 function Conveyor.new(ConveyorInstance: Types.ConveyorInstance): Class
 	local self = setmetatable({}, Conveyor) :: Class
+	InstantiatedConveyors[ConveyorInstance] = self
 
+	self.Baggages = {}
 	self.ConveyorInstance = ConveyorInstance
 
 	return self
@@ -93,6 +95,7 @@ function Conveyor.StopSpawning(self: Class)
 end
 
 function Conveyor.Destroy(self: Class)
+	InstantiatedConveyors[self.ConveyorInstance] = nil
 	self:StopSpawning()
 	for _, ExistingBaggage in self.Baggages do
 		ExistingBaggage:Destroy()

@@ -19,11 +19,14 @@ export type Class = typeof(setmetatable(
 
 		StartAttachment: Attachment,
 		EndAttachment: Attachment,
-		BaggageVisual: typeof(BaggageTemplate),
 		BaggageInstance: Folder,
+
 		Container: Instance,
+		BaggageVisual: typeof(BaggageTemplate),
+		ClickDetector: ClickDetector,
 
 		Expired: typeof(Signal.new()),
+		Activated: typeof(Signal.new()),
 		_BaggageMoveConnection: RBXScriptConnection?,
 	},
 	Baggage
@@ -37,21 +40,35 @@ function Baggage.new(
 ): Class
 	local self = setmetatable({}, Baggage) :: Class
 
+	self.Expired = Signal.new()
+	self.Activated = Signal.new()
+
 	self.Container = Container
-	self.Id = BaggageInstance:GetAttribute("Id")
+	self.Id = tonumber(BaggageInstance.Name)
 	self.Material = Enum.Material:FromValue(BaggageInstance:GetAttribute("Material") :: number)
 	self.Color = BaggageInstance:GetAttribute("Color")
 
 	self.Lifetime = BaggageInstance:GetAttribute("Lifetime")
 	self.CreationTime = BaggageInstance:GetAttribute("CreationTime")
 
-	self:CreateVisual()
-
 	self.StartAttachment = StartAttachment
 	self.EndAttachment = EndAttachment
+	self:CreateVisual()
+
+	self.ClickDetector = Instance.new("ClickDetector")
+	self.ClickDetector.MaxActivationDistance = Configuration.DEFAULT_BAGGAGE_ACTIVATION_DISTANCE
+	self.ClickDetector.MouseClick:Connect(function()
+		self:Activate()
+	end)
+	self.ClickDetector.Parent = self.BaggageVisual
+
 	self.BaggageInstance = BaggageInstance
 
 	return self
+end
+
+function Baggage.Activate(self: Class)
+	self.Activated:Fire()
 end
 
 function Baggage.Expire(self: Class)
@@ -60,9 +77,12 @@ end
 
 function Baggage.Start(self: Class)
 	assert(self._BaggageMoveConnection == nil, "Baggage.Start: Attempted to start while already started.")
+	local StartServerTime = workspace:GetServerTimeNow() -- Client sync, use once to avoid heavy bandwidth usage
+	local StartClientTime = os.clock()
+
 	self._BaggageMoveConnection = RunService.Heartbeat:Connect(function()
-		local CurrentServerTime = workspace:GetServerTimeNow() -- Client sync
-		local Progress = CurrentServerTime / (self.CreationTime + self.Lifetime)
+		local ClientTimeElapsed = os.clock() - StartClientTime
+		local Progress = (StartServerTime + ClientTimeElapsed - self.CreationTime) / self.Lifetime
 
 		if Progress >= 1 then
 			self:Expire()
@@ -111,6 +131,10 @@ end
 
 function Baggage.Destroy(self: Class)
 	self:Stop()
+	self:DestroyVisual()
+	self.ClickDetector:Destroy()
+	self.Expired:Destroy()
+	self.Activated:Destroy()
 	self.Container = nil :: any
 	self.BaggageInstance = nil :: any
 end

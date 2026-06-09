@@ -37,7 +37,7 @@ function Baggage.new(ConveyorInstance: Types.ConveyorInstance, Lifetime: number,
 	BaggageId += 1
 
 	self.BaggageInstance = Instance.new("Folder")
-	self.BaggageInstance:SetAttribute("Id", self.Id)
+	self.BaggageInstance.Name = tostring(self.Id)
 	self.BaggageInstance:SetAttribute("Material", Material.Value) -- Attributes don't store materials natively, can reconstruct on client
 	self.BaggageInstance:SetAttribute("Color", Color)
 	self.BaggageInstance:SetAttribute("CreationTime", workspace:GetServerTimeNow()) -- For client sync
@@ -61,6 +61,11 @@ function Baggage.Expire(self: Class)
 	self.Expired:Fire()
 end
 
+function Baggage.GetProgress(self: Class): number
+	local TimeElapsed = os.clock() - self.CreationTime
+	return TimeElapsed / self.Lifetime
+end
+
 function Baggage.RefreshExpirationTask(self: Class)
 	self:CancelExpirationTask()
 
@@ -71,7 +76,7 @@ function Baggage.RefreshExpirationTask(self: Class)
 end
 
 function Baggage.SetLifetime(self: Class, NewLifetime: number)
-	if os.clock() - self.CreationTime <= NewLifetime then
+	if os.clock() - self.CreationTime >= NewLifetime then
 		self:Expire()
 	else
 		self.Lifetime = NewLifetime
