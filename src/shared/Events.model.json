@@ -5,6 +5,10 @@
         {
             "Name": "ActivateBaggage",
             "ClassName": "RemoteEvent"
+        },
+        {
+            "Name": "SetSpawnInterval",
+            "ClassName": "RemoteEvent"
         }
     ]
 }
